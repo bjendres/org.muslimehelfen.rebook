@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<extension key="org.muslimehelfen.rebook" type="module">
+  <file>rebook</file>
+  <name>Muslime Helfen Umbuchen</name>
+  <description>Mit dieser Erweiterung ist es möglich, ein oder mehrere Zuwendungen von einem Kontakt zu einem anderen Kontakt umzubuchen</description>
+  <license>AGPL-3.0</license>
+  <maintainer>
+    <author>Ilhan Yalman</author>
+    <email>ilhan.yalman@gmail.com</email>
+  </maintainer>
+  <releaseDate>2014-05-29</releaseDate>
+  <version>1.0</version>
+  <develStage>alpha</develStage>
+  <compatibility>
+    <ver>4.2</ver>
+  </compatibility>
+  <comments>This is a new, undeveloped module</comments>
+  <civix>
+    <namespace>CRM/Rebook</namespace>
+  </civix>
+</extension>
