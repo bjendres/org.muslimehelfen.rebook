@@ -106,3 +106,19 @@ function rebook_civicrm_caseTypes(&$caseTypes) {
 function rebook_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
   _rebook_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
+
+/**
+ * Add an action for rebooking after doing a search
+ *
+ * @param string $$objectType specifies the component
+ * @param array  $tasks       the list of actions
+ *
+ * @access public
+ */
+function rebook_civicrm_searchTasks($objectType, &$tasks) {
+  if ($objectType == 'contribution') {
+    $tasks[] = array('title' => t('Umbuchen auf Kontakt'),
+        'class' => 'CRM_Rebook_Form_Task_RebookTask',
+        'result' => false);
+  }
+}
