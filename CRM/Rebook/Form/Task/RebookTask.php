@@ -132,8 +132,8 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
             'total_amount' => $contribution->total_amount,
             'fee_amount' => $contribution->fee_amount,
             'net_amount' => $contribution->net_amount,
-            'trxn_id' => $contribution->trxn_id,
-            'invoice_id' => $contribution->invoice_id,
+            //'trxn_id' => $contribution->trxn_id,
+            //'invoice_id' => $contribution->invoice_id,
             'currency' => $contribution->currency,
             //'cancel_date' => $contribution->cancel_date,
             //'cancel_reason' => $contribution->cancel_reason,
@@ -147,7 +147,7 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
             'is_pay_later' => $contribution->is_pay_later,
             'contribution_status_id' => 1,
             'honor_type_id' => $contribution->honor_type_id,
-            'address_id' => $contribution->address_id,
+            //'address_id' => $contribution->address_id,
             'check_number' => $contribution->check_number,
             'campaign_id' => $contribution->campaign_id
         );
