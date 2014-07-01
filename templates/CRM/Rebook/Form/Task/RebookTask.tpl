@@ -10,7 +10,7 @@
       <p>Anzahl der ausgewählten Zuwendungen: {$totalSelectedContributions}</p><b/>
   </div>
   
-  <p><strong>Bitte geben Sie die Kontakt-Id an, zu der umgebucht werden soll?</strong></p>
+  <p><strong>Bitte geben Sie die CiviCRM ID an, zu der umgebucht werden soll?</strong></p>
 
   {$form.contactId.label}<br />
   {$form.contactId.html}

@@ -13,7 +13,7 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
     $contributionIds = implode(',', $this->_contributionIds);
     $this->setContactIDs();
 
-    $this->add('text', 'contactId', ts('Kontakt-ID'), null, $required = true);
+    $this->add('text', 'contactId', ts('CiviCRM ID'), null, $required = true);
     $this->add('hidden', 'contributionIds', $contributionIds);
     $this->addDefaultButtons(ts('Umbuchen'));
 
@@ -30,7 +30,7 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
     $contributionIds = $values['contributionIds'];
 
     if (!preg_match('/^\d+$/', $contactId)) { // check if is int
-      $errors['contactId'] = ts('Als Kontakt-ID sind nur ganzzahlige Werte erlaubt!');
+      $errors['contactId'] = ts('Als CiviCRM ID sind nur ganzzahlige Werte erlaubt!');
       return empty($errors) ? TRUE : $errors;
     }
 
@@ -39,7 +39,7 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
     $contact->id = $contactId;
 
     if (!$contact->find(true)) {
-      $errors['contactId'] = ts('Der Kontakt mit der CiviID ' . $contactId . ' existiert nicht!');
+      $errors['contactId'] = ts('Der Kontakt mit der CiviCRM ID ' . $contactId . ' existiert nicht!');
       return empty($errors) ? TRUE : $errors;
     }
 
@@ -64,7 +64,7 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
       $contribution->id = $contributionId;
       if ($contribution->find(true)) {
         if ($contribution->contribution_status_id != CRM_Core_OptionGroup::getValue('contribution_status', 'Completed', 'name')) {
-          $errors['contactId'] = ts('Der Zuwenddung mit der  ID ' . $contributionId . ' ist nicht abgeschlossen!');
+          $errors['contactId'] = ts('Der Zuwenddung mit der ID ' . $contributionId . ' ist nicht abgeschlossen!');
           return empty($errors) ? TRUE : $errors;
         }
       }
@@ -97,7 +97,7 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
       if ($contribution->find(true)) {
         // cancel contribution
         $params['contribution_status_id'] = CRM_Core_OptionGroup::getValue('contribution_status', 'Cancelled', 'name');
-        $params['cancel_reason'] = 'Umgebucht zu CiviID ' . $toContactID;
+        $params['cancel_reason'] = 'Umgebucht zu CiviCRM ID ' . $toContactID;
         $params['cancel_date'] = date('YmdHis');
 
         CRM_Utils_Hook::pre('edit', 'Contribution', $contribution->id, $params);
@@ -109,7 +109,7 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
         $params = array(
             'version' => 3,
             'sequential' => 1,
-            'note' => 'Umgebucht zu CiviID ' . $toContactID,
+            'note' => 'Umgebucht zu CiviCRM ID ' . $toContactID,
             'entity_table' => 'civicrm_contribution',
             'entity_id' => $contribution->id
         );
@@ -157,7 +157,7 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
         $params = array(
             'version' => 3,
             'sequential' => 1,
-            'note' => 'Umgebucht von CiviID ' . $contribution->contact_id,
+            'note' => 'Umgebucht von CiviCRM ID ' . $contribution->contact_id,
             'entity_table' => 'civicrm_contribution',
             'entity_id' => $newContribution['id']
         );
