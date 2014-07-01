@@ -116,9 +116,12 @@ function rebook_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
  * @access public
  */
 function rebook_civicrm_searchTasks($objectType, &$tasks) {
-  if ($objectType == 'contribution') {
-    $tasks[] = array('title' => t('Umbuchen auf Kontakt'),
-        'class' => 'CRM_Rebook_Form_Task_RebookTask',
-        'result' => false);
+  $admin = CRM_Core_Permission::check('administer CiviCRM');
+  if ($admin) {
+    if ($objectType == 'contribution') {
+      $tasks[] = array('title' => t('Umbuchen auf Kontakt'),
+          'class' => 'CRM_Rebook_Form_Task_RebookTask',
+          'result' => false);
+    }
   }
 }

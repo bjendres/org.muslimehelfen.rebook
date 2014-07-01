@@ -14,6 +14,7 @@
 
   {$form.contactId.label}<br />
   {$form.contactId.html}
+  {$form.contributionIds.html}
   <br />
 
   {* FOOTER *}
