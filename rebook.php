@@ -119,7 +119,7 @@ function rebook_civicrm_searchTasks($objectType, &$tasks) {
   $admin = CRM_Core_Permission::check('administer CiviCRM');
   if ($admin) {
     if ($objectType == 'contribution') {
-      $tasks[] = array('title' => t('Umbuchen auf Kontakt'),
+      $tasks[] = array('title' => ts('Rebook to contact'),
           'class' => 'CRM_Rebook_Form_Task_RebookTask',
           'result' => false);
     }

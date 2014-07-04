@@ -6,11 +6,12 @@
 
   <div class="messages status no-popup">
       <div class="icon inform-icon"></div>
-      <p>Sind Sie sicher, dass Sie die ausgewählten Zuwendungen umbuchen möchten?</p>
-      <p>Anzahl der ausgewählten Zuwendungen: {$totalSelectedContributions}</p><b/>
+      <p>{ts}Are you sure you want to rebook the selected contributions?{/ts}</p>
+      <p>{ts}Number of selected contributions:{/ts} {$totalSelectedContributions}</p><b/>
   </div>
   
-  <p><strong>Bitte geben Sie die CiviCRM ID an, zu der umgebucht werden soll?</strong></p>
+  <p><strong>{ts}Please enter the target CiviCRM ID?{/ts}</strong></p>
+  
 
   {$form.contactId.label}<br />
   {$form.contactId.html}
