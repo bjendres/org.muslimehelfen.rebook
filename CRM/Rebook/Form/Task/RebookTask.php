@@ -9,6 +9,24 @@ require_once 'CRM/Core/Form.php';
  */
 class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
 
+  function preProcess() {
+    parent::preProcess();
+
+    $session = CRM_Core_Session::singleton();
+    $this->_userContext = $session->readUserContext();
+
+    $admin = CRM_Core_Permission::check('administer CiviCRM');
+    if (!$admin) {
+      CRM_Core_Error::fatal(ts('You do not have permission to access this page.'));
+      CRM_Utils_System::redirect($this->_userContext);
+    }
+
+    if (count($this->_contributionIds) > 1) {
+      CRM_Core_Session::setStatus(ts('Das Umbuchen von mehreren Zuwendungen ist untersagt!'), ts("Umbuchen nicht möglich!"), "error");
+      CRM_Utils_System::redirect($this->_userContext);
+    }
+  }
+
   function buildQuickForm() {
     $contributionIds = implode(',', $this->_contributionIds);
     $this->setContactIDs();
@@ -58,12 +76,13 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
     }
 
     // Es dürfen nur abgeschlossene Zuwendungen umgebucht werden
+    $completed = CRM_Core_OptionGroup::getValue('contribution_status', 'Completed', 'name');
     $arr = explode(",", $contributionIds);
     foreach ($arr as $contributionId) {
       $contribution = new CRM_Contribute_DAO_Contribution();
       $contribution->id = $contributionId;
       if ($contribution->find(true)) {
-        if ($contribution->contribution_status_id != CRM_Core_OptionGroup::getValue('contribution_status', 'Completed', 'name')) {
+        if ($contribution->contribution_status_id != $completed) {
           $errors['contactId'] = ts('Der Zuwenddung mit der ID ' . $contributionId . ' ist nicht abgeschlossen!');
           return empty($errors) ? TRUE : $errors;
         }
@@ -88,7 +107,7 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
 //    }
     // get booking amounts
     $contributionIds = $this->_contributionIds;
-
+    $cancelled = CRM_Core_OptionGroup::getValue('contribution_status', 'Cancelled', 'name');
     foreach ($contributionIds as $contributionId) {
 
       $contribution = new CRM_Contribute_DAO_Contribution();
@@ -96,7 +115,7 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
 
       if ($contribution->find(true)) {
         // cancel contribution
-        $params['contribution_status_id'] = CRM_Core_OptionGroup::getValue('contribution_status', 'Cancelled', 'name');
+        $params['contribution_status_id'] = $cancelled;
         $params['cancel_reason'] = 'Umgebucht zu CiviCRM ID ' . $toContactID;
         $params['cancel_date'] = date('YmdHis');
 
@@ -105,15 +124,16 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
         $contribution->copyValues($params);
         $contribution->save();
 
-        // crete note  
-        $params = array(
-            'version' => 3,
-            'sequential' => 1,
-            'note' => 'Umgebucht zu CiviCRM ID ' . $toContactID,
-            'entity_table' => 'civicrm_contribution',
-            'entity_id' => $contribution->id
-        );
-        
+        /* not needed, but leave it in code for just in case.
+          // crete note
+          $params = array(
+          'version' => 3,
+          'sequential' => 1,
+          'note' => 'Umgebucht zu CiviCRM ID ' . $toContactID,
+          'entity_table' => 'civicrm_contribution',
+          'entity_id' => $contribution->id
+          );
+         */
         $result = civicrm_api('Note', 'create', $params);
 
         CRM_Utils_Hook::post('edit', 'Contribution', $contribution->id, $contribution);
@@ -163,10 +183,8 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
         );
         $result = civicrm_api('Note', 'create', $params);
       }
-      
-      // todo anything todo for contribution_recur?
-      
-      CRM_Core_Session::setStatus(ts('Die Umbuchung wurde erfolgreich durchgeführt.'), '', 'success');
+
+      CRM_Core_Session::setStatus(ts('%1 Zuwendung(en) wurde(n) erfolgreich umgebucht!', array(1 => count($this->_contributionIds))), ts('Erfolgreich umgebucht!'), 'success');
     }
 
     parent::postProcess();
