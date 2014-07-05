@@ -22,7 +22,7 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
     }
 
     if (count($this->_contributionIds) > 1) {
-      CRM_Core_Session::setStatus(ts('Rebooking of multiple contributions not allowedt!'), ts("Rebooking not allowed!"), "error");
+      CRM_Core_Session::setStatus(ts('Rebooking of multiple contributions not allowed!'), ts("Rebooking not allowed!"), "error");
       CRM_Utils_System::redirect($this->_userContext);
     }
   }
@@ -94,90 +94,88 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
 
   function postProcess() {
     $params = array();
+    $rebooked = false;
+    $excludeList = array('id', 'contribution_id', 'trxn_id', 'invoice_id', 'cancel_date', 'cancel_reason', 'address_id', 'contribution_contact_id', 'contribution_status_id');
+    $cancelledStatus = CRM_Core_OptionGroup::getValue('contribution_status', 'Cancelled', 'name');
+    $contribution_fieldKeys = CRM_Contribute_DAO_Contribution::fieldKeys();
+    
     $values = $this->exportValues();
     $toContactID = $values['contactId'];
-
     $contributionIds = $this->_contributionIds;
-    $cancelled = CRM_Core_OptionGroup::getValue('contribution_status', 'Cancelled', 'name');
+    
     foreach ($contributionIds as $contributionId) {
-
-      $contribution = new CRM_Contribute_DAO_Contribution();
-      $contribution->id = $contributionId;
-
-      if ($contribution->find(true)) {
-        // cancel contribution
-        $params['contribution_status_id'] = $cancelled;
-        $params['cancel_reason'] = ts('Rebooked to CiviCRM ID %1', array(1 => $toContactID));
-        $params['cancel_date'] = date('YmdHis');
-
-        CRM_Utils_Hook::pre('edit', 'Contribution', $contribution->id, $params);
-
-        $contribution->copyValues($params);
-        $contribution->save();
-
-        /* not needed, but leave it in code for just in case.
-          // crete note
-          $params = array(
+      $params = array(
           'version' => 3,
           'sequential' => 1,
-          'note' => 'Umgebucht zu CiviCRM ID ' . $toContactID,
-          'entity_table' => 'civicrm_contribution',
-          'entity_id' => $contribution->id
-          );
-         */
-        $result = civicrm_api('Note', 'create', $params);
+          'id' => $contributionId,
+      );
+      $contribution = civicrm_api('Contribution', 'getsingle', $params);
 
-        CRM_Utils_Hook::post('edit', 'Contribution', $contribution->id, $contribution);
-
-        // create new contribution
+      if (empty($contribution['is_error'])) { // contribution exists
+        
+        // cancel contribution
+        $params = array(
+            'version' => 3,
+            'contribution_status_id' => $cancelledStatus,
+            'cancel_reason' => ts('Rebooked to CiviCRM ID %1', array(1 => $toContactID)),
+            'cancel_date' => date('YmdHis'),
+            'id' => $contribution['id'],
+        );
+        $cancelledContribution = civicrm_api('Contribution', 'create', $params);
+        
+        // on error
+        if (!empty($cancelledContribution['is_error']) && !empty($cancelledContribution['error_message'])) {
+          CRM_Core_Session::setStatus($cancelledContribution['error_message'], ts("Error"), "error");
+          CRM_Utils_System::redirect($this->_userContext);
+        }
+        
+        // prepare $params array, take into account exclusionList and proper naming of Contribution fields
         $params = array(
             'version' => 3,
             'sequential' => 1,
             'contribution_contact_id' => $toContactID,
-            'financial_type_id' => $contribution->financial_type_id,
-            'contribution_payment_instrument_id' => $contribution->payment_instrument_id,
-            'contribution_page_id' => $contribution->contribution_page_id,
-            'payment_instrument_id' => $contribution->payment_instrument_id,
-            'receive_date' => $contribution->receive_date,
-            'non_deductible_amount' => $contribution->non_deductible_amount,
-            'total_amount' => $contribution->total_amount,
-            'fee_amount' => $contribution->fee_amount,
-            'net_amount' => $contribution->net_amount,
-            //'trxn_id' => $contribution->trxn_id,
-            //'invoice_id' => $contribution->invoice_id,
-            'currency' => $contribution->currency,
-            //'cancel_date' => $contribution->cancel_date,
-            //'cancel_reason' => $contribution->cancel_reason,
-            'receipt_date' => $contribution->receipt_date,
-            'thankyou_date' => $contribution->thankyou_date,
-            'source' => $contribution->source,
-            'amount_level' => $contribution->amount_level,
-            'contribution_recur_id' => $contribution->contribution_recur_id,
-            'honor_contact_id' => $contribution->honor_contact_id,
-            'is_test' => $contribution->is_test,
-            'is_pay_later' => $contribution->is_pay_later,
-            'contribution_status_id' => 1,
-            'honor_type_id' => $contribution->honor_type_id,
-            //'address_id' => $contribution->address_id,
-            'check_number' => $contribution->check_number,
-            'campaign_id' => $contribution->campaign_id
+            'contribution_status_id' => 1
         );
+
+        foreach ($contribution as $key => $value) {
+
+          if (!in_array($key, $excludeList) && in_array($key, $contribution_fieldKeys)) { // to be sure that this keys really exists
+            $params[$key] = $value;
+          }
+
+          if (strstr($key, 'custom')) { // add custom fields 
+            $params[$key] = $value;
+          }
+        }
+        
+        // create new contribution
         $newContribution = civicrm_api('Contribution', 'create', $params);
+        
+        // on error
+        if (!empty($newContribution['is_error']) && !empty($newContribution['error_message'])) {
+          CRM_Core_Session::setStatus($newContribution['error_message'], ts("Error"), "error");
+          CRM_Utils_System::redirect($this->_userContext);
+        }        
 
         // create note
         $params = array(
             'version' => 3,
             'sequential' => 1,
-            'note' => ts('Rebooked from CiviCRM ID %1', array(1 => $contribution->contact_id)),
+            'note' => ts('Rebooked from CiviCRM ID %1', array(1 => $contribution['id'])),
             'entity_table' => 'civicrm_contribution',
             'entity_id' => $newContribution['id']
         );
         $result = civicrm_api('Note', 'create', $params);
+        
+        $rebooked |= true;
       }
-
-      CRM_Core_Session::setStatus(ts('%1 contribution(s) successfully rebooked!', array(1 => count($this->_contributionIds))), ts('Successfully rebooked !'), 'success');
     }
-
+    
+    if ($rebooked)
+      CRM_Core_Session::setStatus(ts('%1 contribution(s) successfully rebooked!', array(1 => count($this->_contributionIds))), ts('Successfully rebooked!'), 'success');
+    else
+      CRM_Core_Session::setStatus(ts('Please check your data and try again', array(1 => count($this->_contributionIds))), ts('Nothing rebooked!'), 'warning');
+    
     parent::postProcess();
   }
 
