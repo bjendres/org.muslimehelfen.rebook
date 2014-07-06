@@ -23,3 +23,29 @@
   {include file="CRM/common/formButtons.tpl" location="bottom"}
   </div>
 </div>
+  
+{literal}
+<script type="text/javascript">
+cj(function( ) {
+
+  var contactUrl = {/literal}"{crmURL p='civicrm/ajax/rest' q='className=CRM_Contact_Page_AJAX&fnName=getContactList&json=1&context=navigation' h=0 }"{literal};
+
+  cj( '#contactId' ).autocomplete( contactUrl, {
+      width: 200,
+      selectFirst: true,
+      minChars: 1,
+      matchContains: true,
+      delay: 400,
+      max: 1,
+      extraParams:{
+        fieldName: 'contact_id',
+        tableName: 'cc'
+      }
+  }).result(function(event, data, formatted) {
+     cj( '#contactId' ).val(data[1]);
+     return false;
+  });
+});
+
+</script>
+{/literal}  
