@@ -10,6 +10,8 @@ require_once 'CRM/Core/Form.php';
 class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
 
   function preProcess() {
+    $contact_ids = array();
+
     parent::preProcess();
 
     $session = CRM_Core_Session::singleton();
@@ -21,8 +23,22 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
       CRM_Utils_System::redirect($this->_userContext);
     }
 
-    if (count($this->_contributionIds) > 1) {
-      CRM_Core_Session::setStatus(ts('Rebooking of multiple contributions not allowed!'), ts("Rebooking not allowed!"), "error");
+    foreach ($this->_contributionIds as $contributionId) {
+      $params = array(
+          'version' => 3,
+          'sequential' => 1,
+          'id' => $contributionId,
+      );
+      $contribution = civicrm_api('Contribution', 'getsingle', $params);
+
+      if (empty($contribution['is_error'])) { // contribution exists
+        array_push($contact_ids, $contribution['contact_id']);
+      }
+    }
+
+    if (count(array_unique($contact_ids)) > 1) {
+
+      CRM_Core_Session::setStatus(ts('Rebooking of multiple contributions form different contacts not allowed!'), ts("Rebooking not allowed!"), "error");
       CRM_Utils_System::redirect($this->_userContext);
     }
   }
@@ -98,11 +114,11 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
     $excludeList = array('id', 'contribution_id', 'trxn_id', 'invoice_id', 'cancel_date', 'cancel_reason', 'address_id', 'contribution_contact_id', 'contribution_status_id');
     $cancelledStatus = CRM_Core_OptionGroup::getValue('contribution_status', 'Cancelled', 'name');
     $contribution_fieldKeys = CRM_Contribute_DAO_Contribution::fieldKeys();
-    
+
     $values = $this->exportValues();
     $toContactID = $values['contactId'];
     $contributionIds = $this->_contributionIds;
-    
+
     foreach ($contributionIds as $contributionId) {
       $params = array(
           'version' => 3,
@@ -112,7 +128,6 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
       $contribution = civicrm_api('Contribution', 'getsingle', $params);
 
       if (empty($contribution['is_error'])) { // contribution exists
-        
         // cancel contribution
         $params = array(
             'version' => 3,
@@ -122,13 +137,13 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
             'id' => $contribution['id'],
         );
         $cancelledContribution = civicrm_api('Contribution', 'create', $params);
-        
+
         // on error
         if (!empty($cancelledContribution['is_error']) && !empty($cancelledContribution['error_message'])) {
           CRM_Core_Session::setStatus($cancelledContribution['error_message'], ts("Error"), "error");
           CRM_Utils_System::redirect($this->_userContext);
         }
-        
+
         // prepare $params array, take into account exclusionList and proper naming of Contribution fields
         $params = array(
             'version' => 3,
@@ -147,15 +162,15 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
             $params[$key] = $value;
           }
         }
-        
+
         // create new contribution
         $newContribution = civicrm_api('Contribution', 'create', $params);
-        
+
         // on error
         if (!empty($newContribution['is_error']) && !empty($newContribution['error_message'])) {
           CRM_Core_Session::setStatus($newContribution['error_message'], ts("Error"), "error");
           CRM_Utils_System::redirect($this->_userContext);
-        }        
+        }
 
         // create note
         $params = array(
@@ -166,16 +181,16 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
             'entity_id' => $newContribution['id']
         );
         $result = civicrm_api('Note', 'create', $params);
-        
+
         $rebooked |= true;
       }
     }
-    
+
     if ($rebooked)
       CRM_Core_Session::setStatus(ts('%1 contribution(s) successfully rebooked!', array(1 => count($this->_contributionIds))), ts('Successfully rebooked!'), 'success');
     else
       CRM_Core_Session::setStatus(ts('Please check your data and try again', array(1 => count($this->_contributionIds))), ts('Nothing rebooked!'), 'warning');
-    
+
     parent::postProcess();
   }
 
