@@ -152,14 +152,15 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
             'contribution_status_id' => 1
         );
 
+        $custom_fields = array();
         foreach ($contribution as $key => $value) {
 
           if (!in_array($key, $excludeList) && in_array($key, $contribution_fieldKeys)) { // to be sure that this keys really exists
             $params[$key] = $value;
           }
 
-          if (strstr($key, 'custom')) { // add custom fields 
-            $params[$key] = $value;
+          if (strstr($key, 'custom')) { // get custom fields 
+            $custom_fields[$key] = $value;
           }
         }
 
@@ -171,6 +172,20 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
           CRM_Core_Session::setStatus($newContribution['error_message'], ts("Error"), "error");
           CRM_Utils_System::redirect($this->_userContext);
         }
+
+        //copy custom values from contribution
+        $params = array(
+            'version' => 3,
+            'sequential' => 1,
+            'entity_id' => $newContribution['id']
+        );
+        $params = array_merge($params, $custom_fields);
+        $customValue = civicrm_api('CustomValue', 'create', $params);
+        
+        if (!empty($customValue['is_error']) && !empty($customValue['error_message'])) {
+          CRM_Core_Session::setStatus($customValue['error_message'], ts("Error"), "error");
+          CRM_Utils_System::redirect($this->_userContext);
+        }        
 
         // create note
         $params = array(
