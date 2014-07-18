@@ -19,7 +19,7 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
 
     $admin = CRM_Core_Permission::check('administer CiviCRM');
     if (!$admin) {
-      CRM_Core_Error::fatal(ts('You do not have permission to access this page.'));
+      CRM_Core_Error::fatal(ts('You do not have the permissions required to access this page.'));
       CRM_Utils_System::redirect($this->_userContext);
     }
 
@@ -38,7 +38,7 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
 
     if (count(array_unique($contact_ids)) > 1) {
 
-      CRM_Core_Session::setStatus(ts('Rebooking of multiple contributions form different contacts not allowed!'), ts("Rebooking not allowed!"), "error");
+      CRM_Core_Session::setStatus(ts('Rebooking of multiple contributions from different contacts is not allowed!'), ts("Rebooking not allowed!"), "error");
       CRM_Utils_System::redirect($this->_userContext);
     }
   }
@@ -64,7 +64,7 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
     $contributionIds = $values['contributionIds'];
 
     if (!preg_match('/^\d+$/', $contactId)) { // check if is int
-      $errors['contactId'] = ts('Please enter only integer values for a CiviCRM ID!');
+      $errors['contactId'] = ts('Please enter a CiviCRM ID!');
       return empty($errors) ? TRUE : $errors;
     }
 
@@ -73,21 +73,21 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
     $contact->id = $contactId;
 
     if (!$contact->find(true)) {
-      $errors['contactId'] = ts('Contact with CiviCRM ID %1 doesn\'t exists!', array(1 => $contactId));
+      $errors['contactId'] = ts('A contact with CiviCRM ID %1 doesn\'t exist!', array(1 => $contactId));
       return empty($errors) ? TRUE : $errors;
     }
 
     // Der Kontakt, auf den umgebucht wird, darf kein Haushalt sein.
     $contactType = $contact->getContactType($contactId);
     if (!empty($contactType) && $contactType == 'Household') {
-      $errors['contactId'] = ts('The contact that will be rebooked to can not be a household!');
+      $errors['contactId'] = ts('The target contact can not be a household!');
       return empty($errors) ? TRUE : $errors;
     }
 
     // Der Kontakt, auf den umgebucht wird, darf nicht im Papierkorb sein.
     $contactIsDeleted = $contact->is_deleted;
     if ($contactIsDeleted == 1) {
-      $errors['contactId'] = ts('The contact that will be rebooked to can not be trashed!');
+      $errors['contactId'] = ts('The target contact can not be in trash!');
       return empty($errors) ? TRUE : $errors;
     }
 

@@ -1,0 +1,97 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: org.muslimehelfen.rebook\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Bjoern Endres <Bjoern.Endres@didonai.com>\n"
+"Language-Team: SYSTOPIA <endres@systopia.de>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: German\n"
+"X-Poedit-Country: GERMANY\n"
+
+#: CRM/Rebook/Form/Task/RebookTask.php
+msgid "You do not have the permissions required to access this page."
+msgstr "Sie haben keine Berechtigung, diese Funktion zu verwenden."
+
+#: CRM/Rebook/Form/Task/RebookTask.php
+msgid "Rebooking of multiple contributions from different contacts is not allowed!"
+msgstr "Umbuchen von Zuwendungen von unterschiedlichen Kontakten ist nicht möglich!"
+
+#: CRM/Rebook/Form/Task/RebookTask.php
+msgid "Rebooking not allowed!"
+msgstr "Umbuchung nicht möglich!"
+
+#: CRM/Rebook/Form/Task/RebookTask.php
+msgid "CiviCRM ID"
+msgstr ""
+
+#: CRM/Rebook/Form/Task/RebookTask.php
+msgid "Rebook"
+msgstr "Umbuchen"
+
+#: CRM/Rebook/Form/Task/RebookTask.php
+msgid "Please enter a CiviCRM ID!"
+msgstr "Bitte geben Sie eine CiviCRM-ID ein!"
+
+#: CRM/Rebook/Form/Task/RebookTask.php
+msgid "A contact with CiviCRM ID %1 doesn't exist!"
+msgstr "Kein Kontakt mit CiviCRM-ID %1 gefunden."
+
+#: CRM/Rebook/Form/Task/RebookTask.php
+msgid "The target contact can not be a household!"
+msgstr "Der Zielkontakt darf kein Haushalt sein."
+
+#: CRM/Rebook/Form/Task/RebookTask.php
+msgid "The target contact can not be in trash!"
+msgstr "Der Zielkontakt darf sich nicht im Papierkorb befinden."
+
+#: CRM/Rebook/Form/Task/RebookTask.php
+msgid "The contribution with ID %1 is not completed!"
+msgstr "Die Zuwendung [%1] ist nicht abgeschlossen."
+
+#: CRM/Rebook/Form/Task/RebookTask.php
+msgid "Rebooked to CiviCRM ID %1"
+msgstr "Umgebucht zu CiviCRM-ID %1"
+
+#: CRM/Rebook/Form/Task/RebookTask.php
+msgid "Error"
+msgstr ""
+
+#: CRM/Rebook/Form/Task/RebookTask.php
+msgid "Rebooked from CiviCRM ID %1"
+msgstr "Umgebucht von CiviCRM-ID %1"
+
+#: CRM/Rebook/Form/Task/RebookTask.php
+msgid "%1 contribution(s) successfully rebooked!"
+msgstr "%1 Zuwendungen erfolgreich umgebucht."
+
+#: CRM/Rebook/Form/Task/RebookTask.php
+msgid "Successfully rebooked!"
+msgstr "Erfolgreich umgebucht!"
+
+#: CRM/Rebook/Form/Task/RebookTask.php
+msgid "Please check your data and try again"
+msgstr "Bitte überprüfen Sie Ihre Eingaben und versuchen Sie es erneut."
+
+#: CRM/Rebook/Form/Task/RebookTask.php
+msgid "Nothing rebooked!"
+msgstr "Kein Umbuchung vorgenommen!"
+
+#: rebook.php
+msgid "Rebook to contact"
+msgstr "Umbuchen zu anderem Kontakt"
+
+#: templates/CRM/Rebook/Form/Task/RebookTask.tpl
+msgid "Are you sure you want to rebook the selected contributions?"
+msgstr "Sind Sie sicher dass sie die ausgewählten Zuwendungen umbuchen wollen?"
+
+#: templates/CRM/Rebook/Form/Task/RebookTask.tpl
+msgid "Number of selected contributions:"
+msgstr "Anzahl der ausgewählten Zuwendungen:"
+
+#: templates/CRM/Rebook/Form/Task/RebookTask.tpl
+msgid "Please enter the target CiviCRM ID?"
+msgstr "Bitte geben Sie die CiviCRM-ID des Zielkontakt ein."
+
