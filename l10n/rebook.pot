@@ -1,69 +1,69 @@
-#: CRM/Rebook/Form/Task/RebookTask.php
+#: CRM/Rebook/Form/Task/RebookTask.php CRM/Rebook/Form/Rebook.php
 msgid "You do not have the permissions required to access this page."
 msgstr ""
 
-#: CRM/Rebook/Form/Task/RebookTask.php
+#: CRM/Rebook/Form/Task/RebookTask.php CRM/Rebook/Form/Rebook.php
 msgid ""
 "Rebooking of multiple contributions from different contacts is not allowed!"
 msgstr ""
 
-#: CRM/Rebook/Form/Task/RebookTask.php
+#: CRM/Rebook/Form/Task/RebookTask.php CRM/Rebook/Form/Rebook.php
 msgid "Rebooking not allowed!"
 msgstr ""
 
-#: CRM/Rebook/Form/Task/RebookTask.php
+#: CRM/Rebook/Form/Task/RebookTask.php CRM/Rebook/Form/Rebook.php
 msgid "CiviCRM ID"
 msgstr ""
 
-#: CRM/Rebook/Form/Task/RebookTask.php
+#: CRM/Rebook/Form/Task/RebookTask.php CRM/Rebook/Form/Rebook.php rebook.php
 msgid "Rebook"
 msgstr ""
 
-#: CRM/Rebook/Form/Task/RebookTask.php
+#: CRM/Rebook/Form/Task/RebookTask.php CRM/Rebook/Form/Rebook.php
 msgid "Please enter a CiviCRM ID!"
 msgstr ""
 
-#: CRM/Rebook/Form/Task/RebookTask.php
+#: CRM/Rebook/Form/Task/RebookTask.php CRM/Rebook/Form/Rebook.php
 msgid "A contact with CiviCRM ID %1 doesn't exist!"
 msgstr ""
 
-#: CRM/Rebook/Form/Task/RebookTask.php
+#: CRM/Rebook/Form/Task/RebookTask.php CRM/Rebook/Form/Rebook.php
 msgid "The target contact can not be a household!"
 msgstr ""
 
-#: CRM/Rebook/Form/Task/RebookTask.php
+#: CRM/Rebook/Form/Task/RebookTask.php CRM/Rebook/Form/Rebook.php
 msgid "The target contact can not be in trash!"
 msgstr ""
 
-#: CRM/Rebook/Form/Task/RebookTask.php
+#: CRM/Rebook/Form/Task/RebookTask.php CRM/Rebook/Form/Rebook.php
 msgid "The contribution with ID %1 is not completed!"
 msgstr ""
 
-#: CRM/Rebook/Form/Task/RebookTask.php
+#: CRM/Rebook/Form/Task/RebookTask.php CRM/Rebook/Form/Rebook.php
 msgid "Rebooked to CiviCRM ID %1"
 msgstr ""
 
-#: CRM/Rebook/Form/Task/RebookTask.php
+#: CRM/Rebook/Form/Task/RebookTask.php CRM/Rebook/Form/Rebook.php
 msgid "Error"
 msgstr ""
 
-#: CRM/Rebook/Form/Task/RebookTask.php
+#: CRM/Rebook/Form/Task/RebookTask.php CRM/Rebook/Form/Rebook.php
 msgid "Rebooked from CiviCRM ID %1"
 msgstr ""
 
-#: CRM/Rebook/Form/Task/RebookTask.php
+#: CRM/Rebook/Form/Task/RebookTask.php CRM/Rebook/Form/Rebook.php
 msgid "%1 contribution(s) successfully rebooked!"
 msgstr ""
 
-#: CRM/Rebook/Form/Task/RebookTask.php
+#: CRM/Rebook/Form/Task/RebookTask.php CRM/Rebook/Form/Rebook.php
 msgid "Successfully rebooked!"
 msgstr ""
 
-#: CRM/Rebook/Form/Task/RebookTask.php
+#: CRM/Rebook/Form/Task/RebookTask.php CRM/Rebook/Form/Rebook.php
 msgid "Please check your data and try again"
 msgstr ""
 
-#: CRM/Rebook/Form/Task/RebookTask.php
+#: CRM/Rebook/Form/Task/RebookTask.php CRM/Rebook/Form/Rebook.php
 msgid "Nothing rebooked!"
 msgstr ""
 
@@ -72,17 +72,29 @@ msgid "Rebook to contact"
 msgstr ""
 
 #: templates/CRM/Rebook/Form/Task/RebookTask.tpl
+#: templates/CRM/Rebook/Form/Rebook.tpl
 msgid "Are you sure you want to rebook the selected contributions?"
 msgstr ""
 
 #: templates/CRM/Rebook/Form/Task/RebookTask.tpl
+#: templates/CRM/Rebook/Form/Rebook.tpl
 msgid "Number of selected contributions:"
 msgstr ""
 
 #: templates/CRM/Rebook/Form/Task/RebookTask.tpl
+#: templates/CRM/Rebook/Form/Rebook.tpl
 msgid "Please enter the target CiviCRM ID?"
 msgstr ""
 
 #: templates/CRM/Rebook/Form/Task/RebookTask.tpl
+#: templates/CRM/Rebook/Form/Rebook.tpl
 msgid "Are you sure you want to rebook the contribution?"
+msgstr ""
+
+#: CRM/Rebook/Form/Rebook.php
+msgid "You need to specifiy a contribution to rebook."
+msgstr ""
+
+#: CRM/Rebook/Form/Rebook.php
+msgid "At least one of the given contributions doesn't exist!"
 msgstr ""
