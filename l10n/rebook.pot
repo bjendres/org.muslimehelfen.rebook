@@ -82,3 +82,7 @@ msgstr ""
 #: templates/CRM/Rebook/Form/Task/RebookTask.tpl
 msgid "Please enter the target CiviCRM ID?"
 msgstr ""
+
+#: templates/CRM/Rebook/Form/Task/RebookTask.tpl
+msgid "Are you sure you want to rebook the contribution?"
+msgstr ""

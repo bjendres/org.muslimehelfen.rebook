@@ -116,12 +116,40 @@ function rebook_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
  * @access public
  */
 function rebook_civicrm_searchTasks($objectType, &$tasks) {
-  $admin = CRM_Core_Permission::check('administer CiviCRM');
-  if ($admin) {
-    if ($objectType == 'contribution') {
-      $tasks[] = array('title' => ts('Rebook to contact'),
-          'class' => 'CRM_Rebook_Form_Task_RebookTask',
+  if ($objectType == 'contribution') {
+    if (CRM_Core_Permission::check('administer CiviCRM')) {
+      $tasks[] = array(
+          'title'  => ts('Rebook to contact'),
+          'class'  => 'CRM_Rebook_Form_Task_RebookTask',
           'result' => false);
+    }
+  }
+}
+
+/**
+ * Add an action to a list of contributions
+ *
+ * @todo  use civicrm_links hook as soon as it works properly (>= v4.5)
+ *
+ * @access public
+ */
+function rebook_civicrm_searchColumns( $objectName, &$headers,  &$values, &$selector ) {
+  if ($objectName == 'contribution') {
+    // gather some data
+    $contribution_status_complete = (int) CRM_Core_OptionGroup::getValue('contribution_status', 'Completed', 'name');
+    $title = ts('Rebook');
+    $url = CRM_Utils_System::url('civicrm/rebook', "contributionIds=__CONTRIBUTION_ID__");
+    $action = "<a title=\"$title\" class=\"action-item action-item\" href=\"$url\">$title</a>";
+
+    // add 'rebook' action link to each row
+    foreach ($values as $rownr => $row) {
+      $contribution_status_id = $row['contribution_status_id'];
+      // ... but only for completed contributions
+      if ($contribution_status_id==$contribution_status_complete) {
+        $contribution_id = $row['contribution_id'];
+        $this_action = str_replace('__CONTRIBUTION_ID__', $contribution_id, $action);
+        $values[$rownr]['action'] = str_replace('</span>', $this_action.'</span>', $row['action']);        
+      }
     }
   }
 }
