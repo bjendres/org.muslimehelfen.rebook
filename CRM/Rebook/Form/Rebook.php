@@ -125,7 +125,7 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
         // on error
         if (!empty($cancelledContribution['is_error']) && !empty($cancelledContribution['error_message'])) {
           CRM_Core_Session::setStatus($cancelledContribution['error_message'], ts("Error"), "error");
-          CRM_Utils_System::redirect($session->readUserContext());
+          //CRM_Utils_System::redirect($session->readUserContext());
         }
 
         // prepare $params array, take into account exclusionList and proper naming of Contribution fields
@@ -144,6 +144,16 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
           }
 
           if (strstr($key, 'custom')) { // get custom fields 
+            // load custom field spec for exception handling
+            $custom_field_id = substr($key, 7);
+            $custom_field = civicrm_api('CustomField', 'getsingle', array('id'=>$custom_field_id,'version'=>3));
+
+            // Exception 1: dates are not properly formatted
+            if ($custom_field['data_type'] == 'Date') {
+              if (!empty($value)) {
+                $value = date('YmdHis', strtotime($value));
+              }
+            }
             $custom_fields[$key] = $value;
           }
         }
@@ -154,8 +164,7 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
         // on error
         if (!empty($newContribution['is_error']) && !empty($newContribution['error_message'])) {
           CRM_Core_Session::setStatus($newContribution['error_message'], ts("Error"), "error");
-          CRM_Utils_System::redirect($session->readUserContext());
-          return;
+          //CRM_Utils_System::redirect($session->readUserContext());
         }
 
         //copy custom values from contribution
@@ -169,8 +178,7 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
         
         if (!empty($customValue['is_error']) && !empty($customValue['error_message'])) {
           CRM_Core_Session::setStatus($customValue['error_message'], ts("Error"), "error");
-          CRM_Utils_System::redirect($session->readUserContext());
-          return;
+          //CRM_Utils_System::redirect($session->readUserContext());
         }        
 
         // create note
@@ -187,10 +195,13 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
       }
     }
 
-    if ($rebooked == $contribution_count)
+    if ($rebooked == $contribution_count) {
       CRM_Core_Session::setStatus(ts('%1 contribution(s) successfully rebooked!', array(1 => $contribution_count)), ts('Successfully rebooked!'), 'success');
-    else
+    } else {
+      error_log("org.muslimehelfen.rebook: Only $rebooked of $contribution_count contributions rebooked.");
       CRM_Core_Session::setStatus(ts('Please check your data and try again', array(1 => $contribution_count)), ts('Nothing rebooked!'), 'warning');
+      CRM_Utils_System::redirect($session->readUserContext());
+    }
   }
 
 
