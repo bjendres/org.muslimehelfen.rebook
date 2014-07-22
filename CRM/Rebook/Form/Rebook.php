@@ -99,6 +99,7 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
     $cancelledStatus = CRM_Core_OptionGroup::getValue('contribution_status', 'Cancelled', 'name');
     $completedStatus = CRM_Core_OptionGroup::getValue('contribution_status', 'Completed', 'name');
     $contribution_fieldKeys = CRM_Contribute_DAO_Contribution::fieldKeys();
+    $sepa_ooff_payment_id = CRM_Core_OptionGroup::getValue('payment_instrument', 'OOFF', 'name');
 
     $contribution_count = count($contribution_ids);
     $session = CRM_Core_Session::singleton();
@@ -151,7 +152,6 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
                 $value = date('YmdHis', strtotime($value));
               }
             }
-            //$custom_fields[$key] = $value;
             $attributes[$key] = $value;
           }
         }
@@ -160,6 +160,11 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
         $newContribution = civicrm_api('Contribution', 'create', $attributes);
         if (!empty($newContribution['is_error']) && !empty($newContribution['error_message'])) {
           CRM_Core_Session::setStatus($newContribution['error_message'], ts("Error"), "error");
+        }
+
+        // Exception handling for SEPA OOFF payments (org.project60.sepa extension)
+        if ($attributes['payment_instrument_id'] == $sepa_ooff_payment_id) {
+          CRM_Rebook_Form_Rebook::fixOOFFMandate($contribution, $attributes);
         }
 
         // create rebook note
@@ -236,6 +241,80 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
       }
     }
     return empty($errors) ? TRUE : $errors;
+  }
+
+  /**
+   * Fixes the problem, that the cloned contribution does not have a mandate.
+   *
+   * Approach is:
+   *  1) move old (valid) mandate to new contribution
+   *  2) create new (invalid) mandate and attach to old contribution
+   * 
+   * @see org.project60.sepa extension
+   */
+  static function fixOOFFMandate($old_contribution, $new_contribution) {
+    $old_mandate = civicrm_api('SepaMandate', 'getsingle', array('entity_id'=>$old_contribution['id'], 'entity_table'=>'civicrm_contribution', 'version' => 3));
+    error_log(print_r($old_mandate,1));
+    if (!empty($old_mandate['is_error'])) {
+      CRM_Core_Session::setStatus($old_mandate['error_message'], ts("Error"), "error");
+      return;
+    }
+
+    // find a new, unused mandate reference
+    $new_reference_pattern = $old_mandate['reference'].'REB%02d';
+    $new_reference = '';
+    for ($i = 1; $i <= 100; $i++) {
+      $new_reference = sprintf($new_reference_pattern, $i);
+      if (strlen($new_reference) > 35) {
+        CRM_Core_Session::setStatus(ts("Cannot find a new mandate reference, exceeds 35 characters."), ts("Error"), "error");
+        return;                  
+      }
+      
+      // see if this reference already exists
+      $exists = civicrm_api('SepaMandate', 'getsingle', array('reference' => $new_reference, 'version' => 3));
+      if (empty($exists['is_error'])) {
+        // found -> it exists -> damn -> keep looking...
+        if ($i == 100) {
+          // that's it, we tried... maybe something else is wrong
+          CRM_Core_Session::setStatus(ts("Cannot find a new mandate reference"), ts("Error"), "error");
+          return;
+        } else {
+          // keep looking!
+          continue;
+        }
+      } else {
+        // we found a reference
+        break;
+      }
+    }
+
+    // create an invalid clone of the mandate
+    $create_clone = civicrm_api('SepaMandate', 'create', array(
+      'version'               => 3,
+      'entity_id'             => $old_contribution['id'],
+      'entity_table'          => 'civicrm_contribution',
+      'status'                => 'INVALID',
+      'reference'             => $new_reference,
+      'source'                => $old_mandate['source'],
+      'date'                  => date('YmdHis', strtotime($old_mandate['date'])),
+      'validation_date'       => date('YmdHis', strtotime($old_mandate['validation_date'])),
+      'creation_date'         => date('YmdHis', strtotime($old_mandate['creation_date'])),
+      'first_contribution_id' => empty($old_mandate['first_contribution_id'])?'':$old_mandate['first_contribution_id'],
+      'type'                  => $old_mandate['type'],
+      'contact_id'            => $old_mandate['contact_id'],
+      'iban'                  => $old_mandate['iban'],
+      'bic'                   => $old_mandate['bic']));
+    if (!empty($create_clone['is_error'])) {
+      CRM_Core_Session::setStatus($create_clone['error_message'], ts("Error"), "error");
+      return;
+    }
+
+    // set old mandate to new contribution
+    $result = civicrm_api('SepaMandate', 'create', array('id' => $old_mandate['id'], 'entity_id' => $new_contribution['id'], 'version' => 3));
+    if (!empty($result['is_error'])) {
+      CRM_Core_Session::setStatus($result['error_message'], ts("Error"), "error");
+      return;
+    }
   }
 
 }
