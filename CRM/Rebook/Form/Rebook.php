@@ -97,6 +97,7 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
   static function rebook($contribution_ids, $contact_id) {
     $excludeList = array('id', 'contribution_id', 'trxn_id', 'invoice_id', 'cancel_date', 'cancel_reason', 'address_id', 'contribution_contact_id', 'contribution_status_id');
     $cancelledStatus = CRM_Core_OptionGroup::getValue('contribution_status', 'Cancelled', 'name');
+    $completedStatus = CRM_Core_OptionGroup::getValue('contribution_status', 'Completed', 'name');
     $contribution_fieldKeys = CRM_Contribute_DAO_Contribution::fieldKeys();
 
     $contribution_count = count($contribution_ids);
@@ -114,33 +115,29 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
       if (empty($contribution['is_error'])) { // contribution exists
         // cancel contribution
         $params = array(
-            'version' => 3,
-            'contribution_status_id' => $cancelledStatus,
-            'cancel_reason' => ts('Rebooked to CiviCRM ID %1', array(1 => $contact_id)),
-            'cancel_date' => date('YmdHis'),
-            'id' => $contribution['id'],
+            'version'                 => 3,
+            'contribution_status_id'  => $cancelledStatus,
+            'cancel_reason'           => ts('Rebooked to CiviCRM ID %1', array(1 => $contact_id)),
+            'cancel_date'             => date('YmdHis'),
+            'id'                      => $contribution['id'],
         );
         $cancelledContribution = civicrm_api('Contribution', 'create', $params);
-
-        // on error
         if (!empty($cancelledContribution['is_error']) && !empty($cancelledContribution['error_message'])) {
           CRM_Core_Session::setStatus($cancelledContribution['error_message'], ts("Error"), "error");
           //CRM_Utils_System::redirect($session->readUserContext());
         }
 
-        // prepare $params array, take into account exclusionList and proper naming of Contribution fields
-        $params = array(
-            'version' => 3,
-            'sequential' => 1,
+        // Now compile $attributes, taking the exclusionList into account
+        $attributes = array(
+            'version'                 => 3,
             'contribution_contact_id' => $contact_id,
-            'contribution_status_id' => 1
+            'contribution_status_id'  => $completedStatus,
+            'payment_instrument_id'   => CRM_Core_OptionGroup::getValue('payment_instrument', $contribution['instrument_id'], 'id'), // this seems to be an API bug
         );
-
-        $custom_fields = array();
         foreach ($contribution as $key => $value) {
 
           if (!in_array($key, $excludeList) && in_array($key, $contribution_fieldKeys)) { // to be sure that this keys really exists
-            $params[$key] = $value;
+            $attributes[$key] = $value;
           }
 
           if (strstr($key, 'custom')) { // get custom fields 
@@ -154,34 +151,18 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
                 $value = date('YmdHis', strtotime($value));
               }
             }
-            $custom_fields[$key] = $value;
+            //$custom_fields[$key] = $value;
+            $attributes[$key] = $value;
           }
         }
 
         // create new contribution
-        $newContribution = civicrm_api('Contribution', 'create', $params);
-
-        // on error
+        $newContribution = civicrm_api('Contribution', 'create', $attributes);
         if (!empty($newContribution['is_error']) && !empty($newContribution['error_message'])) {
           CRM_Core_Session::setStatus($newContribution['error_message'], ts("Error"), "error");
-          //CRM_Utils_System::redirect($session->readUserContext());
         }
 
-        //copy custom values from contribution
-        $params = array(
-            'version' => 3,
-            'sequential' => 1,
-            'entity_id' => $newContribution['id']
-        );
-        $params = array_merge($params, $custom_fields);
-        $customValue = civicrm_api('CustomValue', 'create', $params);
-        
-        if (!empty($customValue['is_error']) && !empty($customValue['error_message'])) {
-          CRM_Core_Session::setStatus($customValue['error_message'], ts("Error"), "error");
-          //CRM_Utils_System::redirect($session->readUserContext());
-        }        
-
-        // create note
+        // create rebook note
         $params = array(
             'version' => 3,
             'sequential' => 1,
