@@ -259,7 +259,7 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
       return;
     }
 
-    // find a new, unused mandate reference
+    // find a new, unused, derived mandate reference to mark the old one
     $new_reference_pattern = $old_mandate['reference'].'REB%02d';
     $new_reference = '';
     for ($i = 1; $i <= 100; $i++) {
@@ -276,7 +276,7 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
         if ($i == 100) {
           // that's it, we tried... maybe something else is wrong
           CRM_Core_Session::setStatus(ts("Cannot find a new mandate reference"), ts("Error"), "error");
-          return;
+          break;
         } else {
           // keep looking!
           continue;
@@ -309,8 +309,15 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
       return;
     }
 
-    // set old mandate to new contribution
+    // set old (original) mandate to new contribution
     $result = civicrm_api('SepaMandate', 'create', array('id' => $old_mandate['id'], 'entity_id' => $new_contribution_id, 'version' => 3));
+    if (!empty($result['is_error'])) {
+      CRM_Core_Session::setStatus($result['error_message'], ts("Error"), "error");
+      return;
+    }
+
+    // modify new mandate's (invalid clone's) reference, in case it got overridden
+    $result = civicrm_api('SepaMandate', 'create', array('id' => $create_clone['id'], 'reference' => $new_reference, 'version' => 3));
     if (!empty($result['is_error'])) {
       CRM_Core_Session::setStatus($result['error_message'], ts("Error"), "error");
       return;
