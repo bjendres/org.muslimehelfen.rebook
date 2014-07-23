@@ -20,7 +20,7 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
     }
 
     // check if the contributions are all from the same contact
-    CRM_Rebook_Form_Rebook::checkSameContact($this->_contributionIds);
+    CRM_Rebook_Form_Rebook::checkSameContact($this->_contributionIds, $this->_userContext);
   }
 
 
@@ -43,7 +43,7 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
 
   function postProcess() {
     $values = $this->exportValues();
-    CRM_Rebook_Form_Rebook::rebook($this->_contributionIds, $values['contactId']);
+    CRM_Rebook_Form_Rebook::rebook($this->_contributionIds, $values['contactId'], $this->_userContext);
     parent::postProcess();
   }
 

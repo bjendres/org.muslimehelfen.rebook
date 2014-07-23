@@ -16,7 +16,7 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
     $admin = CRM_Core_Permission::check('administer CiviCRM');
     if (!$admin) {
       CRM_Core_Error::fatal(ts('You do not have the permissions required to access this page.'));
-      CRM_Utils_System::redirect($this->_userContext);
+      CRM_Utils_System::redirect();
     }
 
     if (empty($_REQUEST['contributionIds'])) {
@@ -60,8 +60,7 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
    *
    * @param $contribution_ids  an array of contribution IDs
    */
-  static function checkSameContact($contribution_ids) {
-    $session = CRM_Core_Session::singleton();
+  static function checkSameContact($contribution_ids, $redirect_url = NULL) {
     $contact_ids = array();
 
     foreach ($contribution_ids as $contributionId) {
@@ -76,14 +75,14 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
         array_push($contact_ids, $contribution['contact_id']);
       } else {
         CRM_Core_Session::setStatus(ts("At least one of the given contributions doesn't exist!"), ts("Error"), "error");
-        CRM_Utils_System::redirect($session->readUserContext());
+        CRM_Utils_System::redirect($redirect_url);
         return;
       }
     }
 
     if (count(array_unique($contact_ids)) > 1) {
       CRM_Core_Session::setStatus(ts('Rebooking of multiple contributions from different contacts is not allowed!'), ts("Rebooking not allowed!"), "error");
-      CRM_Utils_System::redirect($session->readUserContext());
+      CRM_Utils_System::redirect($redirect_url);
     }    
   }
 
@@ -94,7 +93,7 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
    * @param $contribution_ids  an array of contribution IDs
    * @param $contact_id        the target contact ID
    */
-  static function rebook($contribution_ids, $contact_id) {
+  static function rebook($contribution_ids, $contact_id, $redirect_url = NULL) {
     $excludeList = array('id', 'contribution_id', 'trxn_id', 'invoice_id', 'cancel_date', 'cancel_reason', 'address_id', 'contribution_contact_id', 'contribution_status_id');
     $cancelledStatus = CRM_Core_OptionGroup::getValue('contribution_status', 'Cancelled', 'name');
     $completedStatus = CRM_Core_OptionGroup::getValue('contribution_status', 'Completed', 'name');
@@ -125,7 +124,6 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
         $cancelledContribution = civicrm_api('Contribution', 'create', $params);
         if (!empty($cancelledContribution['is_error']) && !empty($cancelledContribution['error_message'])) {
           CRM_Core_Session::setStatus($cancelledContribution['error_message'], ts("Error"), "error");
-          //CRM_Utils_System::redirect($session->readUserContext());
         }
 
         // Now compile $attributes, taking the exclusionList into account
@@ -186,7 +184,7 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
     } else {
       error_log("org.muslimehelfen.rebook: Only $rebooked of $contribution_count contributions rebooked.");
       CRM_Core_Session::setStatus(ts('Please check your data and try again', array(1 => $contribution_count)), ts('Nothing rebooked!'), 'warning');
-      CRM_Utils_System::redirect($session->readUserContext());
+      CRM_Utils_System::redirect($redirect_url);
     }
   }
 
