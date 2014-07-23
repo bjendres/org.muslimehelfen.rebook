@@ -171,7 +171,7 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
         $params = array(
             'version' => 3,
             'sequential' => 1,
-            'note' => ts('Rebooked from CiviCRM ID %1', array(1 => $contribution['id'])),
+            'note' => ts('Rebooked from CiviCRM ID %1', array(1 => $contribution['contact_id'])),
             'entity_table' => 'civicrm_contribution',
             'entity_id' => $newContribution['id']
         );
