@@ -53,7 +53,7 @@ msgstr "Die Zuwendung [%1] ist nicht abgeschlossen."
 
 #: CRM/Rebook/Form/Task/RebookTask.php CRM/Rebook/Form/Rebook.php
 msgid "Rebooked to CiviCRM ID %1"
-msgstr "Umgebucht zu CiviCRM-ID %1"
+msgstr "Umgebucht zu CiviID  %1"
 
 #: CRM/Rebook/Form/Task/RebookTask.php CRM/Rebook/Form/Rebook.php
 msgid "Error"
@@ -61,7 +61,7 @@ msgstr ""
 
 #: CRM/Rebook/Form/Task/RebookTask.php CRM/Rebook/Form/Rebook.php
 msgid "Rebooked from CiviCRM ID %1"
-msgstr "Umgebucht von CiviCRM-ID %1"
+msgstr "Umgebucht von CiviID  %1"
 
 #: CRM/Rebook/Form/Task/RebookTask.php CRM/Rebook/Form/Rebook.php
 msgid "%1 contribution(s) successfully rebooked!"
@@ -110,4 +110,12 @@ msgstr "Sie müssen eine Zuwendung zur Umbuchung angeben."
 #: CRM/Rebook/Form/Rebook.php
 msgid "At least one of the given contributions doesn't exist!"
 msgstr "Mindestens eine der angegebenen Zuwendungen existiert nicht oder nicht mehr."
+
+#: CRM/Rebook/Form/Rebook.php
+msgid "Cannot find a new mandate reference, exceeds 35 characters."
+msgstr "Es kann keine neue Mandatsreferenz erstellt werden, die alte ist schon zu lang."
+
+#: CRM/Rebook/Form/Rebook.php
+msgid "Cannot find a new mandate reference"
+msgstr "Es konnte keine neue Mandatsreferenz gefunden werden."
 

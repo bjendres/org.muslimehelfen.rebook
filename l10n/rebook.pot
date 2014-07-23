@@ -98,3 +98,11 @@ msgstr ""
 #: CRM/Rebook/Form/Rebook.php
 msgid "At least one of the given contributions doesn't exist!"
 msgstr ""
+
+#: CRM/Rebook/Form/Rebook.php
+msgid "Cannot find a new mandate reference, exceeds 35 characters."
+msgstr ""
+
+#: CRM/Rebook/Form/Rebook.php
+msgid "Cannot find a new mandate reference"
+msgstr ""
