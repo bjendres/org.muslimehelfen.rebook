@@ -88,7 +88,7 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
 
 
   /**
-   * Will rebooking all given contributions to the given target contact
+   * Will rebook all given contributions to the given target contact
    *
    * @param $contribution_ids  an array of contribution IDs
    * @param $contact_id        the target contact ID
@@ -161,7 +161,7 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
         }
 
         // Exception handling for SEPA OOFF payments (org.project60.sepa extension)
-        if ($attributes['payment_instrument_id'] == $sepa_ooff_payment_id) {
+        if (!empty($sepa_ooff_payment_id) && $attributes['payment_instrument_id'] == $sepa_ooff_payment_id) {
           CRM_Rebook_Form_Rebook::fixOOFFMandate($contribution, $newContribution['id']);
         }
 
@@ -174,6 +174,20 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
             'entity_id' => $newContribution['id']
         );
         $result = civicrm_api('Note', 'create', $params);
+
+
+        // move all notes from the old contribution
+        $notes = civicrm_api('Note', 'get', array('entity_id' => $contributionId, 'entity_table' => 'civicrm_contribution', 'version' => 3));
+        if (!empty($notes['is_error'])) {
+          error_log("org.muslimehelfen.rebook: Error while reading notes: ".$notes['error_message']);
+        } else {
+          foreach ($notes['values'] as $note) {
+            $dao = new CRM_Core_DAO_Note();
+            $dao->id = $note['id'];
+            $dao->entity_id = $newContribution['id'];
+            $dao->save();
+          }
+        }
 
         $rebooked += 1;
       }
