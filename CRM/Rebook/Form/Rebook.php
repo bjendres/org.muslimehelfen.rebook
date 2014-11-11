@@ -50,6 +50,15 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
     $values = $this->exportValues();
     CRM_Rebook_Form_Rebook::rebook($this->contribution_ids, $values['contactId']);
     parent::postProcess();
+
+    // finally, redirect to original contact's contribution overview
+    $origin_contact_id = CRM_Rebook_Form_Rebook::checkSameContact($this->contribution_ids, NULL);
+    if (!empty($origin_contact_id)) {
+      $url = CRM_Utils_System::url('civicrm/contact/view', "reset=1&cid=$origin_contact_id&selectedChild=contribute");
+    } else {
+      $url = CRM_Utils_System::url('civicrm', "");
+    }
+    CRM_Utils_System::redirect($url);
   }
 
 
@@ -59,6 +68,8 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
    * Checks if the given contributions are of the same contact - one of the requirements for rebooking
    *
    * @param $contribution_ids  an array of contribution IDs
+   * 
+   * @return the one contact ID or NULL
    */
   static function checkSameContact($contribution_ids, $redirect_url = NULL) {
     $contact_ids = array();
@@ -80,10 +91,14 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
       }
     }
 
-    if (count(array_unique($contact_ids)) > 1) {
+    $contact_ids = array_unique($contact_ids);
+    if (count($contact_ids) > 1) {
       CRM_Core_Session::setStatus(ts('Rebooking of multiple contributions from different contacts is not allowed!'), ts("Rebooking not allowed!"), "error");
       CRM_Utils_System::redirect($redirect_url);
-    }    
+      return NULL;
+    } else {
+      return reset($contact_ids);
+    }
   }
 
 

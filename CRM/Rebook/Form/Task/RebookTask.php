@@ -45,6 +45,15 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
     $values = $this->exportValues();
     CRM_Rebook_Form_Rebook::rebook($this->_contributionIds, $values['contactId'], $this->_userContext);
     parent::postProcess();
+
+    // finally, redirect to original contact's contribution overview
+    $origin_contact_id = CRM_Rebook_Form_Rebook::checkSameContact($this->_contributionIds, NULL);
+    if (!empty($origin_contact_id)) {
+      $url = CRM_Utils_System::url('civicrm/contact/view', "reset=1&cid=$origin_contact_id&selectedChild=contribute");
+    } else {
+      $url = CRM_Utils_System::url('civicrm', "");
+    }
+    CRM_Utils_System::redirect($url);    
   }
 
 }
