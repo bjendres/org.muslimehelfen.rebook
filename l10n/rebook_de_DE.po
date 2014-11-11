@@ -96,7 +96,7 @@ msgstr "Anzahl der ausgewählten Zuwendungen:"
 #: templates/CRM/Rebook/Form/Task/RebookTask.tpl
 #: templates/CRM/Rebook/Form/Rebook.tpl
 msgid "Please enter the target CiviCRM ID?"
-msgstr "Bitte geben Sie die CiviCRM-ID des Zielkontakt ein."
+msgstr "Bitte geben Sie die CiviCRM-ID des Zielkontakts ein."
 
 #: templates/CRM/Rebook/Form/Task/RebookTask.tpl
 #: templates/CRM/Rebook/Form/Rebook.tpl
