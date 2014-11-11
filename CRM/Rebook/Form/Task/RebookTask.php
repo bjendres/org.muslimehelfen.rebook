@@ -12,15 +12,18 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
 
   function preProcess() {
     parent::preProcess();
-  
+
+    $session = CRM_Core_Session::singleton();
+    $userContext = $session->readUserContext();  
+
     $admin = CRM_Core_Permission::check('administer CiviCRM');
     if (!$admin) {
       CRM_Core_Error::fatal(ts('You do not have the permissions required to access this page.'));
-      CRM_Utils_System::redirect($this->_userContext);
+      CRM_Utils_System::redirect($userContext);
     }
 
     // check if the contributions are all from the same contact
-    CRM_Rebook_Form_Rebook::checkSameContact($this->_contributionIds, $this->_userContext);
+    CRM_Rebook_Form_Rebook::checkSameContact($this->_contributionIds, $userContext);
   }
 
 
@@ -42,8 +45,11 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
 
 
   function postProcess() {
+    $session = CRM_Core_Session::singleton();
+    $userContext = $session->readUserContext();  
+
     $values = $this->exportValues();
-    CRM_Rebook_Form_Rebook::rebook($this->_contributionIds, $values['contactId'], $this->_userContext);
+    CRM_Rebook_Form_Rebook::rebook($this->_contributionIds, $values['contactId'], $userContext);
     parent::postProcess();
 
     // finally, redirect to original contact's contribution overview
