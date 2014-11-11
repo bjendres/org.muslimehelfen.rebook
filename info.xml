@@ -9,8 +9,8 @@
     <email>ilhan.yalman@gmail.com</email>
   </maintainer>
   <releaseDate>2014-05-29</releaseDate>
-  <version>0.9</version>
-  <develStage>alpha</develStage>
+  <version>0.9.1</version>
+  <develStage>beta</develStage>
   <compatibility>
     <ver>4.2</ver>
   </compatibility>
