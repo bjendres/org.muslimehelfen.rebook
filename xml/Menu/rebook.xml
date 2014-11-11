@@ -2,7 +2,7 @@
 <menu>
   <item>
     <path>civicrm/rebook</path>
-    <page_callback>CRM_Rebook_Form_Rebook</page_callback>
+    <page_callback>CRM_Rebook_Form_Task_Rebook</page_callback>
     <title>Rebook</title>
     <access_arguments>administer CiviCRM</access_arguments>
   </item>

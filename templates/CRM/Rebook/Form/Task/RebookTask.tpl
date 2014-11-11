@@ -1,1 +1,1 @@
-{include file="CRM/Rebook/Form/Rebook.tpl"}
+{include file="CRM/Rebook/Form/Task/Rebook.tpl"}

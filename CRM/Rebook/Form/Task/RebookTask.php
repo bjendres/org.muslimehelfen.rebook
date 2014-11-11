@@ -23,7 +23,7 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
     }
 
     // check if the contributions are all from the same contact
-    CRM_Rebook_Form_Rebook::checkSameContact($this->_contributionIds, $userContext);
+    CRM_Rebook_Form_Task_Rebook::checkSameContact($this->_contributionIds, $userContext);
   }
 
 
@@ -40,7 +40,7 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
 
 
   function addRules() {
-    $this->addFormRule(array('CRM_Rebook_Form_Rebook', 'rebookRules'));
+    $this->addFormRule(array('CRM_Rebook_Form_Task_Rebook', 'rebookRules'));
   }
 
 
@@ -49,11 +49,11 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
     $userContext = $session->readUserContext();  
 
     $values = $this->exportValues();
-    CRM_Rebook_Form_Rebook::rebook($this->_contributionIds, $values['contactId'], $userContext);
+    CRM_Rebook_Form_Task_Rebook::rebook($this->_contributionIds, $values['contactId'], $userContext);
     parent::postProcess();
 
     // finally, redirect to original contact's contribution overview
-    $origin_contact_id = CRM_Rebook_Form_Rebook::checkSameContact($this->_contributionIds, NULL);
+    $origin_contact_id = CRM_Rebook_Form_Task_Rebook::checkSameContact($this->_contributionIds, NULL);
     if (!empty($origin_contact_id)) {
       $url = CRM_Utils_System::url('civicrm/contact/view', "reset=1&cid=$origin_contact_id&selectedChild=contribute");
     } else {

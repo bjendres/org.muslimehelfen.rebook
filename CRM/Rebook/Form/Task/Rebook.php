@@ -5,7 +5,7 @@ require_once 'CRM/Core/Form.php';
 /**
  * Form controller class
  */
-class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
+class CRM_Rebook_Form_Task_Rebook extends CRM_Core_Form {
 
   protected $contribution_ids = array();
   
@@ -26,7 +26,7 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
     $this->contribution_ids = array((int) $_REQUEST['contributionIds']);
 
     // check if the contributions are all from the same contact
-    CRM_Rebook_Form_Rebook::checkSameContact($this->contribution_ids);
+    CRM_Rebook_Form_Task_Rebook::checkSameContact($this->contribution_ids);
   }
 
 
@@ -42,17 +42,17 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
 
 
   function addRules() {
-    $this->addFormRule(array('CRM_Rebook_Form_Rebook', 'rebookRules'));
+    $this->addFormRule(array('CRM_Rebook_Form_Task_Rebook', 'rebookRules'));
   }
 
 
   function postProcess() {
     $values = $this->exportValues();
-    CRM_Rebook_Form_Rebook::rebook($this->contribution_ids, $values['contactId']);
+    CRM_Rebook_Form_Task_Rebook::rebook($this->contribution_ids, $values['contactId']);
     parent::postProcess();
 
     // finally, redirect to original contact's contribution overview
-    $origin_contact_id = CRM_Rebook_Form_Rebook::checkSameContact($this->contribution_ids, NULL);
+    $origin_contact_id = CRM_Rebook_Form_Task_Rebook::checkSameContact($this->contribution_ids, NULL);
     if (!empty($origin_contact_id)) {
       $url = CRM_Utils_System::url('civicrm/contact/view', "reset=1&cid=$origin_contact_id&selectedChild=contribute");
     } else {
@@ -177,7 +177,7 @@ class CRM_Rebook_Form_Rebook extends CRM_Core_Form {
 
         // Exception handling for SEPA OOFF payments (org.project60.sepa extension)
         if (!empty($sepa_ooff_payment_id) && $attributes['payment_instrument_id'] == $sepa_ooff_payment_id) {
-          CRM_Rebook_Form_Rebook::fixOOFFMandate($contribution, $newContribution['id']);
+          CRM_Rebook_Form_Task_Rebook::fixOOFFMandate($contribution, $newContribution['id']);
         }
 
         // create rebook note
