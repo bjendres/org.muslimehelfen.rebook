@@ -5,16 +5,16 @@
   <description>Mit dieser Erweiterung ist es möglich, ein oder mehrere Zuwendungen von einem Kontakt zu einem anderen Kontakt umzubuchen</description>
   <license>AGPL-3.0</license>
   <maintainer>
-    <author>Ilhan Yalman</author>
-    <email>ilhan.yalman@gmail.com</email>
+    <author>Björn Endres</author>
+    <email>endres@systopia.de</email>
   </maintainer>
-  <releaseDate>2014-05-29</releaseDate>
-  <version>0.9.1</version>
+  <releaseDate>2014-11-17</releaseDate>
+  <version>0.9.2</version>
   <develStage>beta</develStage>
   <compatibility>
-    <ver>4.2</ver>
+    <ver>4.4</ver>
   </compatibility>
-  <comments>This is a new, undeveloped module</comments>
+  <comments></comments>
   <civix>
     <namespace>CRM/Rebook</namespace>
   </civix>
