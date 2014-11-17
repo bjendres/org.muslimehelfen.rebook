@@ -117,7 +117,7 @@ function rebook_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
  */
 function rebook_civicrm_searchTasks($objectType, &$tasks) {
   if ($objectType == 'contribution') {
-    if (CRM_Core_Permission::check('administer CiviCRM')) {
+    if (CRM_Core_Permission::check('edit contributions')) {
       $tasks[] = array(
           'title'  => ts('Rebook to contact'),
           'class'  => 'CRM_Rebook_Form_Task_RebookTask',

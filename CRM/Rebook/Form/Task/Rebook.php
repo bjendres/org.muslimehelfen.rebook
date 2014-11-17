@@ -13,7 +13,7 @@ class CRM_Rebook_Form_Task_Rebook extends CRM_Core_Form {
   function preProcess() {
     parent::preProcess();
   
-    $admin = CRM_Core_Permission::check('administer CiviCRM');
+    $admin = CRM_Core_Permission::check('edit contributions');
     if (!$admin) {
       CRM_Core_Error::fatal(ts('You do not have the permissions required to access this page.'));
       CRM_Utils_System::redirect();
