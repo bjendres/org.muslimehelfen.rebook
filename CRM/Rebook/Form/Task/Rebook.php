@@ -134,6 +134,7 @@ class CRM_Rebook_Form_Task_Rebook extends CRM_Core_Form {
             'contribution_status_id'  => $cancelledStatus,
             'cancel_reason'           => ts('Rebooked to CiviCRM ID %1', array(1 => $contact_id)),
             'cancel_date'             => date('YmdHis'),
+            'currency'                => $contribution['currency'],    // see ticket MH-577
             'id'                      => $contribution['id'],
         );
         $cancelledContribution = civicrm_api('Contribution', 'create', $params);
