@@ -135,6 +135,9 @@ function rebook_civicrm_searchTasks($objectType, &$tasks) {
  */
 function rebook_civicrm_searchColumns( $objectName, &$headers,  &$values, &$selector ) {
   if ($objectName == 'contribution') {
+    // offer rebook only if the user has the correct permissions
+    if (!CRM_Core_Permission::check('edit contributions')) return;
+
     // gather some data
     $contribution_status_complete = (int) CRM_Core_OptionGroup::getValue('contribution_status', 'Completed', 'name');
     $title = ts('Rebook');
