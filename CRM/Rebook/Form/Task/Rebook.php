@@ -12,6 +12,7 @@ class CRM_Rebook_Form_Task_Rebook extends CRM_Core_Form {
 
   function preProcess() {
     parent::preProcess();
+    CRM_Utils_System::setTitle(ts('Rebook'));
   
     $admin = CRM_Core_Permission::check('edit contributions');
     if (!$admin) {

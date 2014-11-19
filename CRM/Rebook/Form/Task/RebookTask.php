@@ -12,7 +12,8 @@ class CRM_Rebook_Form_Task_RebookTask extends CRM_Contribute_Form_Task {
 
   function preProcess() {
     parent::preProcess();
-
+    CRM_Utils_System::setTitle(ts('Rebook'));
+    
     $session = CRM_Core_Session::singleton();
     $userContext = $session->readUserContext();  
 
